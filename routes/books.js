@@ -32,8 +32,36 @@ const store = {
 // Получить все книги
 router.get('/', (req, res) => {
   const { books } = store
-  res.status(201)
-  res.json(todo)
+
+  res.render('index', {
+    title: 'Все книги',
+    books: books,
+  })
+})
+
+// Получить все книги
+router.get('/create', (req, res) => {
+  res.render('create', {
+    title: 'Создание книги',
+    book: {},
+  })
+})
+
+// Получить все книги
+router.get('/update/:id', (req, res) => {
+  const { books } = store
+  const { id } = req.params
+  const idx = books.findIndex((el) => el.id === id)
+
+  if (idx !== -1) {
+    res.render('update', {
+      title: `Редактирование ${books[idx].title}`,
+      book: books[idx],
+    })
+  } else {
+    res.status(404)
+    res.json('404 | Книга не найдена')
+  }
 })
 
 // Получить книгу по ID
@@ -43,8 +71,10 @@ router.get('/:id', (req, res) => {
   const idx = books.findIndex((el) => el.id === id)
 
   if (idx !== -1) {
-    res.status(201)
-    res.json(books[idx])
+    res.render('view', {
+      title: books[idx].title,
+      book: books[idx],
+    })
   } else {
     res.status(404)
     res.json('404 | Книга не найдена')
@@ -76,7 +106,7 @@ router.get('/:id/download', (req, res) => {
 })
 
 // Создать книгу
-router.post('/', fileMulter.single('fileBook'), (req, res) => {
+router.post('/create', fileMulter.single('fileBook'), (req, res) => {
   const { books } = store
   const { title, description, authors, favorite, fileCover, fileName } =
     req.body
@@ -95,12 +125,11 @@ router.post('/', fileMulter.single('fileBook'), (req, res) => {
   )
   books.push(newBook)
 
-  res.status(201)
-  res.json(newBook)
+  res.redirect('/api/books')
 })
 
 // Редактировать книгу по ID
-router.put('/:id', fileMulter.single('fileBook'), (req, res) => {
+router.post('/update/:id', fileMulter.single('fileBook'), (req, res) => {
   const { books } = store
   const { title, description, authors, favorite, fileCover, fileName } =
     req.body
@@ -124,8 +153,7 @@ router.put('/:id', fileMulter.single('fileBook'), (req, res) => {
       fileBook: fileBookPath,
     }
 
-    res.status(201)
-    res.json(books[idx])
+    res.redirect('/api/books')
   } else {
     res.status(404)
     res.json('404 | Книга не найдена')
@@ -133,15 +161,14 @@ router.put('/:id', fileMulter.single('fileBook'), (req, res) => {
 })
 
 // Удалить книгу по ID
-router.delete('/:id', (req, res) => {
+router.post('/delete/:id', (req, res) => {
   const { books } = store
   const { id } = req.params
   const idx = books.findIndex((el) => el.id === id)
 
   if (idx !== -1) {
     books.splice(idx, 1)
-    res.status(201)
-    res.json(true)
+    res.redirect('/api/books')
   } else {
     res.status(404)
     res.json('404 | Книга не найдена')
