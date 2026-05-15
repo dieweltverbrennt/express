@@ -1,5 +1,5 @@
 {
-  "name": "express",
+  "name": "library",
   "version": "1.0.0",
   "description": "",
   "homepage": "https://github.com/dieweltverbrennt/express#readme",
@@ -15,7 +15,8 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "node index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

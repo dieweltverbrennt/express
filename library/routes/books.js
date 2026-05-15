@@ -65,15 +65,24 @@ router.get('/update/:id', (req, res) => {
 })
 
 // Получить книгу по ID
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { books } = store
   const { id } = req.params
+
   const idx = books.findIndex((el) => el.id === id)
 
   if (idx !== -1) {
+    await fetch(`http://counter-service:4000/counter/${id}/incr`, {
+      method: 'POST',
+    })
+
+    const response = await fetch(`http://counter-service:4000/counter/${id}`)
+    const data = await response.json()
+
     res.render('view', {
       title: books[idx].title,
       book: books[idx],
+      count: data.count,
     })
   } else {
     res.status(404)
